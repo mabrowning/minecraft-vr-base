@@ -1,4 +1,4 @@
-package com.minecraft_vr.base;
+package com.minecraft_vr.render;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;

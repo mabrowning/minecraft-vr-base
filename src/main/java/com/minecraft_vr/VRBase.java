@@ -1,4 +1,6 @@
-package com.minecraft_vr.base;
+package com.minecraft_vr;
+
+import com.minecraft_vr.render.VRRenderer;
 
 import net.minecraft.client.Minecraft;
 import cpw.mods.fml.common.Mod;
