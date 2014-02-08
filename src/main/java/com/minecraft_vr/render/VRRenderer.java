@@ -83,75 +83,66 @@ public class VRRenderer extends EntityRenderer {
 
         this.mc.mcProfiler.endSection();
 
-        if (!this.mc.skipRenderWorld)
+        final ScaledResolution scaledresolution = new ScaledResolution(this.mc.gameSettings, this.mc.displayWidth, this.mc.displayHeight);
+        int i = scaledresolution.getScaledWidth();
+        int j = scaledresolution.getScaledHeight();
+        final int mousex = Mouse.getX() * i / this.mc.displayWidth;
+        final int mousey = j - Mouse.getY() * j / this.mc.displayHeight - 1;
+
+        if (this.mc.currentScreen != null)
         {
-            anaglyphEnable = this.mc.gameSettings.anaglyph;
-            final ScaledResolution scaledresolution = new ScaledResolution(this.mc.gameSettings, this.mc.displayWidth, this.mc.displayHeight);
-            int i = scaledresolution.getScaledWidth();
-            int j = scaledresolution.getScaledHeight();
-            final int mousex = Mouse.getX() * i / this.mc.displayWidth;
-            final int mousey = j - Mouse.getY() * j / this.mc.displayHeight - 1;
+            GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
 
-            if (this.mc.theWorld != null)
+            try
             {
-                this.mc.mcProfiler.startSection("level");
-
-                this.renderWorld(par1, 0L);
-               
-
-                if (OpenGlHelper.shadersSupported)
-                {
-                    if (this.theShaderGroup != null)
-                    {
-                        GL11.glMatrixMode(GL11.GL_TEXTURE);
-                        GL11.glPushMatrix();
-                        GL11.glLoadIdentity();
-                        this.theShaderGroup.loadShaderGroup(par1);
-                        GL11.glPopMatrix();
-                    }
-
-                    this.mc.getFramebuffer().bindFramebuffer(true);
-                }
-
-                this.renderEndNanoTime = System.nanoTime();
-                this.mc.mcProfiler.endStartSection("gui");
-
-                if (!this.mc.gameSettings.hideGUI || this.mc.currentScreen != null)
-                {
-                    GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
-                    this.mc.ingameGUI.renderGameOverlay(par1, this.mc.currentScreen != null, mousex, mousey);
-                }
-
-                this.mc.mcProfiler.endSection();
+                this.mc.currentScreen.drawScreen(mousex, mousey, par1);
             }
-            else
+            catch (Throwable throwable)
             {
-                GL11.glViewport(0, 0, this.mc.displayWidth, this.mc.displayHeight);
-                GL11.glMatrixMode(GL11.GL_PROJECTION);
-                GL11.glLoadIdentity();
-                GL11.glMatrixMode(GL11.GL_MODELVIEW);
-                GL11.glLoadIdentity();
-                this.setupOverlayRendering();
-                this.renderEndNanoTime = System.nanoTime();
-            }
+            	//No crash reports.... oops!
 
-            if (this.mc.currentScreen != null)
-            {
-                GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
-
-                try
-                {
-                    this.mc.currentScreen.drawScreen(mousex, mousey, par1);
-                }
-                catch (Throwable throwable)
-                {
-                	//No crash reports.... oops!
-
-                }
             }
         }
+
+        if (this.mc.theWorld != null)
+        {
+            this.mc.mcProfiler.endStartSection("gui");
+
+            if (!this.mc.gameSettings.hideGUI || this.mc.currentScreen != null)
+            {
+                GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
+                this.mc.ingameGUI.renderGameOverlay(par1, this.mc.currentScreen != null, mousex, mousey);
+            }
+
+            this.mc.mcProfiler.startSection("level");
+            this.mc.getFramebuffer().unbindFramebuffer();
+
+            //TODO: in stereo
+            this.renderWorld(par1, 0L);
+           
+	        //Note: shaders are disabled for now, as they would require yet another render pass
+
+            this.renderEndNanoTime = System.nanoTime();
+
+        }
+        else
+        {
+        	//Render something? Otherwise, its a black void at the main menu
+            GL11.glViewport(0, 0, this.mc.displayWidth, this.mc.displayHeight);
+            GL11.glMatrixMode(GL11.GL_PROJECTION);
+            GL11.glLoadIdentity();
+            GL11.glMatrixMode(GL11.GL_MODELVIEW);
+            GL11.glLoadIdentity();
+            this.setupOverlayRendering();
+        }
+        
+        this.mc.mcProfiler.startSection("vr-compose");
+
+        this.mc.mcProfiler.endSection();
+
     }
 	
+    //For syncing renderer state when switching between vanilla renderer and VR renderer
 	public static void sync( EntityRenderer from, EntityRenderer to)
 	{
 		to.farPlaneDistance = from.farPlaneDistance;
