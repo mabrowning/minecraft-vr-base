@@ -2,6 +2,9 @@ package com.minecraft_vr.render;
 
 import net.minecraft.client.shader.Framebuffer;
 
+//This class is used to replace the default render target.
+//The primary purpose is to prevent drawing outside of the VRRenderer
+//by overloading framebufferRender
 public class FrameBufferShim extends Framebuffer {
 
 	public FrameBufferShim(Framebuffer buf ) {
@@ -23,7 +26,7 @@ public class FrameBufferShim extends Framebuffer {
 	    framebufferFilter = buf.framebufferFilter;
 	}
 
-    public void framebufferRender(int p_147615_1_, int p_147615_2_)
+    public void framebufferRender(int width, int height )
     {
     	//Do nothing!
     }
