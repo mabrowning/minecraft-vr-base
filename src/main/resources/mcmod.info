@@ -1,6 +1,6 @@
 [
 {
-  "modid": "com.minecraft-vr.base",
+  "modid": "VRBase",
   "name": "Minecraft VR Base",
   "description": "Base modifications to Minecraft to allow VR rendering and gameplay",
   "version": "${version}",
