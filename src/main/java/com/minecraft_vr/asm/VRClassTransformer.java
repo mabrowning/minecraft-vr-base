@@ -1,7 +1,5 @@
 package com.minecraft_vr.asm;
 
-import java.util.Iterator;
-
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
@@ -23,19 +21,31 @@ public class VRClassTransformer implements IClassTransformer {
 			return transformGuiIngame( bytes, false );
 		else if( name.equals( "bah"))
 			return transformGuiIngame( bytes, true );
+		else if( name.equals( "net.minecraft.client.gui.GuiScreen"))
+			return transformGuiScreen( bytes, false );
+		else if( name.equals( "bcd"))
+			return transformGuiScreen( bytes, true );
 		
 		return bytes;
 	}
 	
+	private byte[] transformGuiScreen( byte[] bytes, boolean obf )
+	{
+		return removeMethod( bytes, obf? "b":"drawWorldBackground", "(I)V" );
+	}
+	
 	private byte[] transformMainMenu( byte[] bytes, boolean obf )
 	{
-		return bytes;
+		return removeMethod( bytes, obf? "b":"drawPanorama", "(IIF)V" );
 	}
 
 	private byte[] transformGuiIngame( byte[] bytes, boolean obf )
 	{
-		String targetMethodName = obf? "a":"renderVignette";
-
+		return removeMethod( bytes, obf? "a":"renderVignette", "(FII)V" );
+	}
+	
+	private byte[] removeMethod( byte[] bytes, String methodName, String methodSignature )
+	{
 		//set up ASM class manipulation stuff. Consult the ASM docs for details
 		ClassNode classNode = new ClassNode();
 		ClassReader classReader = new ClassReader(bytes);
@@ -43,7 +53,7 @@ public class VRClassTransformer implements IClassTransformer {
 		
 		for( MethodNode m : classNode.methods )
 		{
-			if ((m.name.equals(targetMethodName) && m.desc.equals("(FII)V")))
+			if ((m.name.equals(methodName) && m.desc.equals( methodSignature )))
 			{
 				//Remove all instructions: just return after doing nothing
 				m.instructions.clear();
@@ -55,6 +65,7 @@ public class VRClassTransformer implements IClassTransformer {
 		ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
 		classNode.accept(writer);
 		return writer.toByteArray();
+		
 	}
 
 }

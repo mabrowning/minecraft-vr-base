@@ -414,7 +414,7 @@ public class VRRenderer extends EntityRenderer {
         final int mousey = height - Mouse.getY() * height  / this.mc.displayHeight - 1;
 
         GL11.glPushAttrib( GL11.GL_COLOR_BUFFER_BIT );
-        GL11.glClearColor(1, 0, 1, 0);
+        GL11.glClearColor(0, 0, 0, 0);
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT );
         GL11.glPopAttrib();
 
