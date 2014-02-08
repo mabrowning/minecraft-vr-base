@@ -66,11 +66,6 @@ public class VRRenderer extends EntityRenderer {
         if( this.mc.theWorld != null )
         {
         	//renderWorld()
-	        GL11.glEnable(GL11.GL_CULL_FACE);
-	        GL11.glEnable(GL11.GL_DEPTH_TEST);
-	        GL11.glEnable(GL11.GL_ALPHA_TEST);
-	        GL11.glAlphaFunc(GL11.GL_GREATER, 0.5F);
-	
 	        if (this.mc.renderViewEntity == null)
 	        {
 	            this.mc.renderViewEntity = this.mc.thePlayer;
@@ -98,6 +93,11 @@ public class VRRenderer extends EntityRenderer {
 
 	        if (this.mc.theWorld != null)
 	        {
+		        GL11.glEnable(GL11.GL_CULL_FACE);
+		        GL11.glEnable(GL11.GL_DEPTH_TEST);
+		        GL11.glEnable(GL11.GL_ALPHA_TEST);
+		        GL11.glAlphaFunc(GL11.GL_GREATER, 0.5F);
+	
 	        	//TODO: this will go away
 		        this.farPlaneDistance = (float)(this.mc.gameSettings.renderDistanceChunks * 16);
 		        GL11.glMatrixMode(GL11.GL_PROJECTION);
@@ -413,10 +413,19 @@ public class VRRenderer extends EntityRenderer {
         final int mousex = Mouse.getX() * width / this.mc.displayWidth;
         final int mousey = height - Mouse.getY() * height  / this.mc.displayHeight - 1;
 
-        GL11.glPushAttrib( GL11.GL_COLOR_BUFFER_BIT );
         GL11.glClearColor(0, 0, 0, 0);
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT );
-        GL11.glPopAttrib();
+
+        if (this.mc.theWorld != null)
+        {
+            this.mc.mcProfiler.endStartSection("gui");
+
+            if (!this.mc.gameSettings.hideGUI || this.mc.currentScreen != null)
+            {
+                GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
+                this.mc.ingameGUI.renderGameOverlay(par1, this.mc.currentScreen != null, mousex, mousey);
+            }
+        }
 
         if (this.mc.currentScreen != null)
         {
@@ -434,16 +443,6 @@ public class VRRenderer extends EntityRenderer {
             }
         }
 
-        if (this.mc.theWorld != null)
-        {
-            this.mc.mcProfiler.endStartSection("gui");
-
-            if (!this.mc.gameSettings.hideGUI || this.mc.currentScreen != null)
-            {
-                GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
-                this.mc.ingameGUI.renderGameOverlay(par1, this.mc.currentScreen != null, mousex, mousey);
-            }
-        }
 
     }
 	
