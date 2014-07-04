@@ -6,9 +6,11 @@ import com.minecraft_vr.asm.VRClassTransformer;
 import com.minecraft_vr.asm.VRModContainer;
 
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
+import cpw.mods.fml.relauncher.IFMLLoadingPlugin.SortingIndex;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin.TransformerExclusions;
 
 @TransformerExclusions({"com.minecraft_vr.asm"})
+@SortingIndex(1001) //So we can use srg names
 public class VRLoadingPlugin implements IFMLLoadingPlugin {
 
 	@Override
@@ -35,5 +37,4 @@ public class VRLoadingPlugin implements IFMLLoadingPlugin {
 	public String getAccessTransformerClass() {
 		return null;
 	}
-
 }

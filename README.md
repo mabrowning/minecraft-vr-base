@@ -1,7 +1,7 @@
 Minecraft VR Forge Mod (base)
 ===================================
 
-Minecraft Version: 1.7.2
+Minecraft Version: 1.7.10
 
 Current Version: 0.0 (this doesn't do anything you want it to yet!)
 
@@ -20,7 +20,7 @@ BUILDING
 
 Uses gradle.
 
-gradle setupDecompWorkspace will create a development worksapce
+gradle setupDevWorkspace will create a development worksapce
 gradle eclipse will create an eclipse project in this directory
 
 gradle build will build all dependencies and the mod.
@@ -28,5 +28,11 @@ gradle build will build all dependencies and the mod.
 Launch configuration:
 
 MainClass: net.minecraft.launchwrapper.Launch
-Args: --version 1.7 --tweakClass cpw.mods.fml.common.launcher.FMLTweaker --accessToken test
-JVM Args: -Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.coreMods.load=com.minecraft_vr.VRLoadingPlugin 
+
+Args: --version 1.7 --tweakClass cpw.mods.fml.common.launcher.FMLTweaker --accessToken FML --userProperties={} --assetIndex 1.7.10 --assetsDir $HOME/.gradle/caches/minecraft/assets
+
+(Replace $HOME with your home directory in order to get sound effects)
+
+JVM Args: -Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.coreMods.load=com.minecraft_vr.VRLoadingPlugin
+
+

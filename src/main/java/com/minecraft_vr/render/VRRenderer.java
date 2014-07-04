@@ -407,7 +407,7 @@ public class VRRenderer extends EntityRenderer {
     
     public void renderGuiLayer( float par1 )
     {
-        final ScaledResolution scaledresolution = new ScaledResolution(this.mc.gameSettings, this.mc.displayWidth, this.mc.displayHeight);
+        final ScaledResolution scaledresolution = new ScaledResolution(this.mc, this.mc.displayWidth, this.mc.displayHeight);
         int width = scaledresolution.getScaledWidth();
         int height = scaledresolution.getScaledHeight();
         final int mousex = Mouse.getX() * width / this.mc.displayWidth;

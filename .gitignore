@@ -18,3 +18,7 @@ releases/
 build
 eclipse
 /bin
+/config/
+options.txt
+saves/
+

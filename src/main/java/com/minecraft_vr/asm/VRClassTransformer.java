@@ -11,40 +11,20 @@ import net.minecraft.launchwrapper.IClassTransformer;
 
 public class VRClassTransformer implements IClassTransformer {
 
+	//We registered with SortingIndex(1001), so we can use srgnames everywhere
 	@Override
 	public byte[] transform(String name, String transformedName, byte[] bytes) {
 		if( name.equals( "net.minecraft.client.gui.GuiMainMenu" ) )
-			return transformMainMenu( bytes, false );
-		else if( name.equals( "btj" ) )
-			return transformMainMenu( bytes, true );
+			return removeMethod( bytes, "drawPanorama", "func_73970_b", "(IIF)V" );
 		else if( name.equals( "net.minecraft.client.gui.GuiIngame"))
-			return transformGuiIngame( bytes, false );
-		else if( name.equals( "bah"))
-			return transformGuiIngame( bytes, true );
+			return removeMethod( bytes, "renderVignette", "func_73829_a", "(FII)V" );
 		else if( name.equals( "net.minecraft.client.gui.GuiScreen"))
-			return transformGuiScreen( bytes, false );
-		else if( name.equals( "bcd"))
-			return transformGuiScreen( bytes, true );
+			return removeMethod( bytes, "drawWorldBackground", "func_146270_b", "(I)V" );
 		
 		return bytes;
 	}
-	
-	private byte[] transformGuiScreen( byte[] bytes, boolean obf )
-	{
-		return removeMethod( bytes, obf? "b":"drawWorldBackground", "(I)V" );
-	}
-	
-	private byte[] transformMainMenu( byte[] bytes, boolean obf )
-	{
-		return removeMethod( bytes, obf? "b":"drawPanorama", "(IIF)V" );
-	}
 
-	private byte[] transformGuiIngame( byte[] bytes, boolean obf )
-	{
-		return removeMethod( bytes, obf? "a":"renderVignette", "(FII)V" );
-	}
-	
-	private byte[] removeMethod( byte[] bytes, String methodName, String methodSignature )
+	private byte[] removeMethod( byte[] bytes, String mcpName, String srgName, String methodSignature )
 	{
 		//set up ASM class manipulation stuff. Consult the ASM docs for details
 		ClassNode classNode = new ClassNode();
@@ -53,7 +33,8 @@ public class VRClassTransformer implements IClassTransformer {
 		
 		for( MethodNode m : classNode.methods )
 		{
-			if ((m.name.equals(methodName) && m.desc.equals( methodSignature )))
+			if ( ( (m.name.equals(mcpName) ||
+					m.name.equals(srgName) ) && m.desc.equals( methodSignature )))
 			{
 				//Remove all instructions: just return after doing nothing
 				m.instructions.clear();
